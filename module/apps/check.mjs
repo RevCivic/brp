@@ -700,8 +700,8 @@ export class BRPCheck {
     const targetElement = event.currentTarget
     const presetType = targetElement.dataset?.preset
     const dataset = targetElement.dataset
-    const targetChat = $(targetElement).closest('.message')
-    let targetChatId = targetChat[0].dataset.messageId
+    const targetChat = targetElement.closest('.message')
+    let targetChatId = targetChat.dataset.messageId
     let origin = game.user.id
     let originGM = game.user.isGM
 
