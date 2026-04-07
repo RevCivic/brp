@@ -1,5 +1,11 @@
 # CHANGE LOG
 
+## 14.1.56
+- Updated for FoundryVTT Version 14 compatibility
+- Replaced all jQuery DOM API usage with native browser DOM APIs (jQuery was removed in FoundryVTT v14)
+- Fixed `CONST.CHAT_MESSAGE_OTHER` reference to use `CONST.CHAT_MESSAGE_STYLES.OTHER`
+- Removed deprecated `{ async: true }` option from `TextEditor.enrichHTML` calls
+
 ## 13.1.55
 - A few more damage categories added to weapons
 - Weapons can also do double damage bonus
