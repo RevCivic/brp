@@ -1,5 +1,8 @@
 # CHANGE LOG
 
+## 14.1.57
+- Add standard GitHub Actions release workflow for automated Foundry VTT package publishing
+
 ## 14.1.56
 - Updated for FoundryVTT Version 14 compatibility
 - Replaced all jQuery DOM API usage with native browser DOM APIs (jQuery was removed in FoundryVTT v14)
