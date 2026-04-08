@@ -1,5 +1,8 @@
 # CHANGE LOG
 
+## 14.1.58
+- Finalize release workflow and correct version tagging
+
 ## 14.1.57
 - Add standard GitHub Actions release workflow for automated Foundry VTT package publishing
 
