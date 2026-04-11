@@ -9,6 +9,7 @@ import { CBCard } from "../cards/combat-card.mjs"
 import BRPDialog from '../setup/brp-dialog.mjs';
 
 export class BRPCheck {
+  // Luck cannot be spent on Damage (DM), Armour (AR), or Impact (IM) rolls because they have no success target to convert.
   static LUCK_EXCLUDED_ROLL_TYPES = ['DM', 'AR', 'IM']
 
   //Roll Types
