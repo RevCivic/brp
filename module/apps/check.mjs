@@ -804,7 +804,11 @@ export class BRPCheck {
     if (!actor || actor.type !== 'character') { return }
 
     const originUser = game.users.get(data.origin)
-    if (originUser && !originUser.isGM && !actor.testUserPermission(originUser, "OWNER")) {
+    if (!originUser) {
+      ui.notifications.warn(game.i18n.localize('BRP.restricted'))
+      return
+    }
+    if (!originUser.isGM && !actor.testUserPermission(originUser, "OWNER")) {
       ui.notifications.warn(game.i18n.localize('BRP.restricted'))
       return
     }
@@ -830,7 +834,7 @@ export class BRPCheck {
     card.resultLabel = game.i18n.localize(`BRP.resultLevel.${BRPCheck.RESULT_LEVEL_SUCCESS}`)
     chatCard[rank] = card
     await targetMsg.setFlag('brp', 'chatCard', chatCard)
-    await targetMsg.setFlag('brp', 'successLevel', chatCard[0]?.resultLevel ?? targetMsg.flags.brp.successLevel)
+    await targetMsg.setFlag('brp', 'successLevel', chatCard[rank]?.resultLevel ?? targetMsg.flags.brp.successLevel)
   }
 
 
