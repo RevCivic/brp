@@ -355,7 +355,7 @@ export class BRPCheck {
     //Format the data so it's in the same format as will be held in the Chat Message when saved
     let diffLabel = game.i18n.localize('BRP.' + config.diff)
     if (!config.diff) { diffLabel = config.diffVal }
-    const luckCost = Math.max(Number(config.rollVal ?? 0) - Number(config.targetScore ?? 0), 0)
+    const luckCost = BRPCheck.calculateLuckCost(config.rollVal, config.targetScore)
     const luckAvailable = Number(actor.system?.luck?.value ?? 0)
     const canSpendLuck = game.settings.get('brp', 'useLuck') &&
       actor.type === 'character' &&
@@ -626,6 +626,10 @@ export class BRPCheck {
     return resultLevel
   }
 
+  static calculateLuckCost(rollVal, targetScore) {
+    return Math.max(Number(rollVal ?? 0) - Number(targetScore ?? 0), 0)
+  }
+
 
   // Prep the chat card
   static async startChat(chatMsgData) {
@@ -790,11 +794,12 @@ export class BRPCheck {
 
     const originUser = game.users.get(data.origin)
     if (originUser && !originUser.isGM && !actor.testUserPermission(originUser, "OWNER")) {
+      ui.notifications.warn(game.i18n.localize('BRP.restricted'))
       return
     }
 
     // Recalculate when missing to support older chat cards generated before luckCost was stored.
-    const luckCost = Number(card.luckCost ?? Math.max(Number(card.rollVal ?? 0) - Number(card.targetScore ?? 0), 0))
+    const luckCost = Number(card.luckCost ?? BRPCheck.calculateLuckCost(card.rollVal, card.targetScore))
     if (luckCost <= 0) { return }
 
     const currentLuck = Number(actor.system?.luck?.value ?? 0)
