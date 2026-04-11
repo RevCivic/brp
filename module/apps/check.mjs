@@ -793,6 +793,7 @@ export class BRPCheck {
       return
     }
 
+    // Recalculate when missing to support older chat cards generated before luckCost was stored.
     const luckCost = Number(card.luckCost ?? Math.max(Number(card.rollVal ?? 0) - Number(card.targetScore ?? 0), 0))
     if (luckCost <= 0) { return }
 
