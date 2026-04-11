@@ -449,10 +449,8 @@ export class BRPActor extends Actor {
     }
     systemData.luck.max = Math.max((systemData.stats.pow.total * 5) + (systemData.luck.mod ?? 0) + (systemData.luck.effects ?? 0), 0)
     const luckValue = Number(systemData.luck.value ?? NaN)
-    if (!Number.isFinite(luckValue)) {
-      systemData.luck.value = systemData.luck.max
-    }
-    systemData.luck.value = Math.max(Math.min(Number(systemData.luck.value), systemData.luck.max), 0)
+    const validLuck = Number.isFinite(luckValue) ? luckValue : systemData.luck.max
+    systemData.luck.value = Math.max(Math.min(validLuck, systemData.luck.max), 0)
     systemData.luck.label = game.i18n.localize('BRP.StatsPowDeriv')
     systemData.xpBonus = Math.ceil(systemData.stats.int.total / 2);
     systemData.dmgBonus = this._damageBonus(systemData.stats.str.total + systemData.stats.siz.total)

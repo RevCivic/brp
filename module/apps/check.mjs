@@ -359,12 +359,7 @@ export class BRPCheck {
     if (!config.diff) { diffLabel = config.diffVal }
     const luckCost = BRPCheck.calculateLuckCost(config.rollVal, config.targetScore)
     const luckAvailable = Number(actor.system?.luck?.value ?? 0)
-    const canSpendLuck = game.settings.get('brp', 'useLuck') &&
-      actor.type === 'character' &&
-      !BRPCheck.LUCK_EXCLUDED_ROLL_TYPES.includes(config.rollType) &&
-      config.resultLevel < 2 &&
-      luckCost > 0 &&
-      luckAvailable >= luckCost
+    const canSpendLuck = BRPCheck.canActorSpendLuckOnRoll(actor, config, luckCost, luckAvailable)
 
     let chatMsgData = {
       rollType: config.rollType,
@@ -634,6 +629,15 @@ export class BRPCheck {
 
   static getOrCalculateLuckCost(card) {
     return Number(card.luckCost ?? BRPCheck.calculateLuckCost(card.rollVal, card.targetScore))
+  }
+
+  static canActorSpendLuckOnRoll(actor, config, luckCost, luckAvailable) {
+    return game.settings.get('brp', 'useLuck') &&
+      actor.type === 'character' &&
+      !BRPCheck.LUCK_EXCLUDED_ROLL_TYPES.includes(config.rollType) &&
+      config.resultLevel < 2 &&
+      luckCost > 0 &&
+      luckAvailable >= luckCost
   }
 
 
