@@ -36,6 +36,15 @@ const SETTINGS = {
     type: Boolean
   },
 
+  useLuck: {
+    name: 'BRP.Settings.useLuck',
+    hint: 'BRP.Settings.useLuckHint',
+    scope: 'world',
+    config: false,
+    default: false,
+    type: Boolean
+  },
+
   useRes5: {
     name: 'BRP.Settings.useRes5',
     hint: 'BRP.Settings.useRes5Hint',

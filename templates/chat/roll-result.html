@@ -47,6 +47,11 @@
                 <span class="bold result-fail"> {{localize 'BRP.malfunction'}}</span>
               {{/if}}
               </span>
+              {{#if c.canSpendLuck}}
+                <button class='cardbutton owner-only' data-partic-id="{{c.particId}}" data-partic-type="{{c.particType}}" data-rank="{{key}}" data-preset='spend-luck' type="button">
+                  {{localize 'BRP.spendLuck' value=c.luckCost}}
+                </button>
+              {{/if}}
             </div>
 
 
@@ -70,6 +75,9 @@
               {{#unless (eq c.healingLabel "")}}
                 <div class="rollHidden">{{localize 'BRP.healing'}}: {{c.healingLabel}}[{{c.healing}}]</div>
               {{/unless}}
+              {{#if (gt c.luckSpent 0)}}
+                <div class="rollHidden">{{localize 'BRP.luckSpent'}}: {{c.luckSpent}}</div>
+              {{/if}}
               {{#if (eq c.description "")}}
                 <div class="rollHidden bottom-line">{{localize 'BRP.diceRoll'}}: {{c.diceRolled}}</div>
               {{else}}

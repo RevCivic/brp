@@ -51,6 +51,26 @@ export class BRPRollType {
     })
   }
 
+  //Start Luck Roll
+  static async _onLuckRoll(event, detail, actor) {
+    let shiftKey = event.shiftKey
+    if (game.settings.get('brp', 'switchShift')) {
+      shiftKey = !shiftKey
+    }
+    BRPCheck._trigger({
+      rollType: 'CH',
+      cardType: 'NO',
+      characteristic: 'pow',
+      shiftKey: shiftKey,
+      actor: actor,
+      token: actor.token,
+      luckRoll: true,
+      label: game.i18n.localize('BRP.StatsPowDeriv'),
+      targetScore: actor.system.luck?.value ?? 0,
+      rawScore: (actor.system.luck?.value ?? 0) / 5
+    })
+  }
+
   //Start Skill Roll
   static async _onSkillRoll(event, detail, actor) {
     let altKey = event.altKey;

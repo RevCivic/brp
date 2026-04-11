@@ -108,6 +108,12 @@
           "max": 5,
           "mod": 0
         },
+        "luck": {
+          "value": 0,
+          "max": 0,
+          "mod": 0,
+          "effects": 0
+        },
         "sanity": {
           "value": 5,
           "max": 5

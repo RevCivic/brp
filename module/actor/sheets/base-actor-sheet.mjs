@@ -40,6 +40,7 @@ export class BRPActorSheetV2 extends api.HandlebarsApplicationMixin(sheets.Actor
       rollCharStats: this._onRollCharStats,
       skillRoll: this._onSkillRoll,
       statRoll: this._onStatRoll,
+      luckRoll: this._onLuckRoll,
       weaponRoll: this._onWeaponRoll,
       damageRoll: this._onDamageRoll,
       armourRoll: this._onArmourRoll,
@@ -306,6 +307,11 @@ export class BRPActorSheetV2 extends api.HandlebarsApplicationMixin(sheets.Actor
   //Stat Roll
   static _onStatRoll(event, target) {
     BRPRollType._onStatRoll(event, target.dataset, this.document)
+  }
+
+  //Luck Roll
+  static _onLuckRoll(event, target) {
+    BRPRollType._onLuckRoll(event, target.dataset, this.document)
   }
 
   //Skill Roll

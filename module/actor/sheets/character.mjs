@@ -218,6 +218,7 @@ export class BRPCharacterSheet extends BRPActorSheetV2 {
     context.wealthLabel = game.settings.get('brp', 'wealthLabel');
     context.useEDU = game.settings.get('brp', 'useEDU');
     context.useFP = game.settings.get('brp', 'useFP');
+    context.useLuck = game.settings.get('brp', 'useLuck');
     context.useSAN = game.settings.get('brp', 'useSAN');
     context.useRES5 = game.settings.get('brp', 'useRes5');
     context.useHPL = game.settings.get('brp', 'useHPL');
@@ -242,6 +243,7 @@ export class BRPCharacterSheet extends BRPActorSheetV2 {
     context.background3 = game.settings.get('brp', 'background3');
     let resource = 2;
     if (game.settings.get('brp', 'useFP')) { resource++ };
+    if (game.settings.get('brp', 'useLuck')) { resource++ };
     if (game.settings.get('brp', 'useSAN')) { resource++ };
     if (game.settings.get('brp', 'useRes5')) { resource++ };
     context.resource = resource;

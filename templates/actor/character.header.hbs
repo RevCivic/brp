@@ -173,6 +173,8 @@
               {{stat.labelDeriv}}</div>
             {{#if (eq key "siz")}}
               <div class="deriv-name centre tertiary bold">{{../actor.system.dmgBonus.full}}</div>
+            {{else if (isAnd (eq key "pow") ../useLuck)}}
+              <div class="deriv-name centre tertiary bold rollable" data-action="luckRoll" data-tooltip="{{localize 'BRP.charHint'}}">{{../system.luck.value}}%</div>
             {{else}}
               <div class="deriv-name centre tertiary bold">{{stat.deriv}}%</div>
             {{/if}}
@@ -258,6 +260,20 @@
               <div class="attrib-disp tertiary bold">{{system.fatigue.max}}</div>
               <div class="left rollable" data-action="attribute" data-att="fatigue" data-adj="recover"><a class="smallIcon"
                   data-tooltip="{{localize 'BRP.ppRecover'}}"><i class="fas fa-bed-empty"></i></a></div>
+            </div>
+          </div>
+        {{/if}}
+
+        {{#if useLuck}}
+          <div class="each-resource centre">
+            <label for="system.luck.value" class="resource-label rollable" data-action="luckRoll" data-tooltip="{{localize 'BRP.charHint'}}">{{system.luck.label}}</label>
+            <div class="resource-grid">
+              <div></div>
+              <input class="attrib-inp centre" type="text" name="system.luck.value" value="{{system.luck.value}}"
+                data-dtype="Number" />
+              <span class="divider"> / </span>
+              <div class="attrib-disp tertiary bold">{{system.luck.max}}</div>
+              <div></div>
             </div>
           </div>
         {{/if}}

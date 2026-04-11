@@ -444,6 +444,15 @@ export class BRPActor extends Actor {
     }
     systemData.health.mjrwnd = Math.ceil(systemData.health.max / 2);
     systemData.power.max = systemData.stats.pow.total + systemData.power.mod + (systemData.power.effects ?? 0);
+    if (!systemData.luck) {
+      systemData.luck = { value: 0, max: 0, mod: 0, effects: 0 }
+    }
+    systemData.luck.max = Math.max((systemData.stats.pow.total * 5) + (systemData.luck.mod ?? 0) + (systemData.luck.effects ?? 0), 0)
+    if (systemData.luck.value === null || typeof systemData.luck.value === "undefined" || Number.isNaN(Number(systemData.luck.value))) {
+      systemData.luck.value = systemData.luck.max
+    }
+    systemData.luck.value = Math.max(Math.min(Number(systemData.luck.value), systemData.luck.max), 0)
+    systemData.luck.label = game.i18n.localize('BRP.StatsPowDeriv')
     systemData.xpBonus = Math.ceil(systemData.stats.int.total / 2);
     systemData.dmgBonus = this._damageBonus(systemData.stats.str.total + systemData.stats.siz.total)
     systemData.dmgSpecBonus = this._damageBonus(systemData.stats.str.total * 2)

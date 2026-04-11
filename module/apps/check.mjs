@@ -68,6 +68,7 @@ export class BRPCheck {
       targetId: target.targetId,
       targetType: target.targetType,
       characteristic: options.characteristic ?? false,
+      luckRoll: options.luckRoll ?? false,
       skillId: options.skillId ?? false,
       itemId: options.itemId ?? false,
       addStat: options.addStat ?? "none",
@@ -110,9 +111,15 @@ export class BRPCheck {
     //Adjust Config based on roll type
     switch (options.rollType) {
       case 'CH':
-        config.label = particActor.system.stats[config.characteristic].labelShort ?? ""
-        config.rawScore = particActor.system.stats[config.characteristic].total
-        config.targetScore = particActor.system.stats[config.characteristic].total * 5 ?? 0
+        if (config.luckRoll) {
+          config.label = options.label ?? game.i18n.localize('BRP.StatsPowDeriv')
+          config.rawScore = Number(options.rawScore ?? 0)
+          config.targetScore = Number(options.targetScore ?? 0)
+        } else {
+          config.label = particActor.system.stats[config.characteristic].labelShort ?? ""
+          config.rawScore = particActor.system.stats[config.characteristic].total
+          config.targetScore = particActor.system.stats[config.characteristic].total * 5 ?? 0
+        }
         break
       case 'SK':
         skill = particActor.items.get(config.skillId)
@@ -348,6 +355,14 @@ export class BRPCheck {
     //Format the data so it's in the same format as will be held in the Chat Message when saved
     let diffLabel = game.i18n.localize('BRP.' + config.diff)
     if (!config.diff) { diffLabel = config.diffVal }
+    const luckCost = Math.max(Number(config.rollVal ?? 0) - Number(config.targetScore ?? 0), 0)
+    const luckAvailable = Number(actor.system?.luck?.value ?? 0)
+    const canSpendLuck = game.settings.get('brp', 'useLuck') &&
+      actor.type === 'character' &&
+      !['DM', 'AR', 'IM'].includes(config.rollType) &&
+      config.resultLevel < 2 &&
+      luckCost > 0 &&
+      luckAvailable >= luckCost
 
     let chatMsgData = {
       rollType: config.rollType,
@@ -390,6 +405,11 @@ export class BRPCheck {
         diceRolled: config.diceRolled,
         resultLevel: config.resultLevel,
         resultLabel: game.i18n.localize('BRP.resultLevel.' + config.resultLevel),
+        luckCost: luckCost,
+        luckAvailable: luckAvailable,
+        canSpendLuck: canSpendLuck,
+        luckSpent: 0,
+        luckRoll: config.luckRoll,
         specLabel: config.specLabel,
         opp: config.opp,
         description: config.description,
@@ -713,7 +733,7 @@ export class BRPCheck {
         game.socket.emit('system.brp', {
           type: 'chatUpdate',
           to: availableGM,
-          value: { presetType, targetChatId, origin, originGM, event }
+          value: { presetType, targetChatId, origin, originGM, event, dataset }
         })
       } else {
         ui.notifications.warn(game.i18n.localize('BRP.noAvailableGM'))
@@ -746,6 +766,9 @@ export class BRPCheck {
       case "resolve-co-card":
         await COCard.COResolve(data)
         break
+      case "spend-luck":
+        await BRPCheck.spendLuck(data, targetMsg)
+        break
       default:
         return
     }
@@ -753,6 +776,44 @@ export class BRPCheck {
     await targetMsg.update({ content: pushhtml })
 
     return
+  }
+
+  static async spendLuck(data, targetMsg) {
+    if (!game.settings.get('brp', 'useLuck')) { return }
+    const rank = Number(data?.dataset?.rank ?? 0)
+    const chatCard = foundry.utils.deepClone(targetMsg.flags.brp.chatCard ?? [])
+    const card = chatCard[rank]
+    if (!card) { return }
+
+    const actor = await BRPactorDetails._getParticipant(card.particId, card.particType)
+    if (!actor || actor.type !== 'character') { return }
+
+    const originUser = game.users.get(data.origin)
+    if (originUser && !originUser.isGM && !actor.testUserPermission(originUser, "OWNER")) {
+      return
+    }
+
+    const luckCost = Number(card.luckCost ?? Math.max(Number(card.rollVal ?? 0) - Number(card.targetScore ?? 0), 0))
+    if (luckCost <= 0) { return }
+
+    const currentLuck = Number(actor.system?.luck?.value ?? 0)
+    if (currentLuck < luckCost) {
+      ui.notifications.warn(game.i18n.localize('BRP.luckInsufficient'))
+      return
+    }
+
+    const newLuck = currentLuck - luckCost
+    await actor.update({ 'system.luck.value': newLuck })
+
+    card.luckSpent = luckCost
+    card.luckAvailable = newLuck
+    card.luckCost = 0
+    card.canSpendLuck = false
+    card.resultLevel = 2
+    card.resultLabel = game.i18n.localize('BRP.resultLevel.2')
+    chatCard[rank] = card
+    await targetMsg.setFlag('brp', 'chatCard', chatCard)
+    await targetMsg.setFlag('brp', 'successLevel', chatCard[0]?.resultLevel ?? targetMsg.flags.brp.successLevel)
   }
 
 
