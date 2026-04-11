@@ -448,7 +448,8 @@ export class BRPActor extends Actor {
       systemData.luck = { value: 0, max: 0, mod: 0, effects: 0 }
     }
     systemData.luck.max = Math.max((systemData.stats.pow.total * 5) + (systemData.luck.mod ?? 0) + (systemData.luck.effects ?? 0), 0)
-    if ((systemData.luck.value === null || typeof systemData.luck.value === "undefined") || Number.isNaN(Number(systemData.luck.value))) {
+    const luckValue = Number(systemData.luck.value)
+    if (systemData.luck.value === null || typeof systemData.luck.value === "undefined" || !Number.isFinite(luckValue)) {
       systemData.luck.value = systemData.luck.max
     }
     systemData.luck.value = Math.max(Math.min(Number(systemData.luck.value), systemData.luck.max), 0)

@@ -9,6 +9,7 @@ import { CBCard } from "../cards/combat-card.mjs"
 import BRPDialog from '../setup/brp-dialog.mjs';
 
 export class BRPCheck {
+  static LUCK_EXCLUDED_ROLL_TYPES = ['DM', 'AR', 'IM']
 
   //Roll Types
   //CH = Characteristic
@@ -359,7 +360,7 @@ export class BRPCheck {
     const luckAvailable = Number(actor.system?.luck?.value ?? 0)
     const canSpendLuck = game.settings.get('brp', 'useLuck') &&
       actor.type === 'character' &&
-      !['DM', 'AR', 'IM'].includes(config.rollType) &&
+      !BRPCheck.LUCK_EXCLUDED_ROLL_TYPES.includes(config.rollType) &&
       config.resultLevel < 2 &&
       luckCost > 0 &&
       luckAvailable >= luckCost
@@ -630,6 +631,10 @@ export class BRPCheck {
     return Math.max(Number(rollVal ?? 0) - Number(targetScore ?? 0), 0)
   }
 
+  static getOrCalculateLuckCost(card) {
+    return Number(card.luckCost ?? BRPCheck.calculateLuckCost(card.rollVal, card.targetScore))
+  }
+
 
   // Prep the chat card
   static async startChat(chatMsgData) {
@@ -799,7 +804,7 @@ export class BRPCheck {
     }
 
     // Recalculate when missing to support older chat cards generated before luckCost was stored.
-    const luckCost = Number(card.luckCost ?? BRPCheck.calculateLuckCost(card.rollVal, card.targetScore))
+    const luckCost = BRPCheck.getOrCalculateLuckCost(card)
     if (luckCost <= 0) { return }
 
     const currentLuck = Number(actor.system?.luck?.value ?? 0)
