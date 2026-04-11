@@ -9,6 +9,7 @@ import { CBCard } from "../cards/combat-card.mjs"
 import BRPDialog from '../setup/brp-dialog.mjs';
 
 export class BRPCheck {
+  static RESULT_LEVEL_SUCCESS = 2
   // Luck cannot be spent on Damage (DM), Armour (AR), or Impact (IM) rolls because they have no success target to convert.
   static LUCK_EXCLUDED_ROLL_TYPES = ['DM', 'AR', 'IM']
 
@@ -635,7 +636,7 @@ export class BRPCheck {
     return game.settings.get('brp', 'useLuck') &&
       actor.type === 'character' &&
       !BRPCheck.LUCK_EXCLUDED_ROLL_TYPES.includes(config.rollType) &&
-      config.resultLevel < 2 &&
+      config.resultLevel < BRPCheck.RESULT_LEVEL_SUCCESS &&
       luckCost > 0 &&
       luckAvailable >= luckCost
   }
@@ -825,8 +826,8 @@ export class BRPCheck {
     card.luckAvailable = newLuck
     card.luckCost = 0
     card.canSpendLuck = false
-    card.resultLevel = 2
-    card.resultLabel = game.i18n.localize('BRP.resultLevel.2')
+    card.resultLevel = BRPCheck.RESULT_LEVEL_SUCCESS
+    card.resultLabel = game.i18n.localize(`BRP.resultLevel.${BRPCheck.RESULT_LEVEL_SUCCESS}`)
     chatCard[rank] = card
     await targetMsg.setFlag('brp', 'chatCard', chatCard)
     await targetMsg.setFlag('brp', 'successLevel', chatCard[0]?.resultLevel ?? targetMsg.flags.brp.successLevel)
